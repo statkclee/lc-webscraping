@@ -3,42 +3,42 @@ layout: lesson
 root: .
 ---
 
-Web scraping is the process of extracting data from websites. Some data that is available on the web is
-presented in a format that makes it easier to collect and use it, for example in the form of downloadable
-comma-separated values (CSV) datasets that can then be imported in a spreadsheet or loaded into a data analysis
-script. Often however, even though it is publicly available, data is not readily available for reuse. 
-For example it can be contained in a PDF, or a table on a website, or spread across multiple web pages.
 
-There are a variety of ways to _scrape_ a website to extract information for reuse.
-In its simplest form, this can be achieved by
-copying and pasting snippets from a web page, but this can be unpractical if there is a large amount of data to
-be extracted, or if it spread over a large number of pages. Instead, specialized tools and techniques can be used
-to automate this process, by defining what sites to visit, what information to look for, and whether data extraction
-should stop once the end of a page has been reached, or whether to follow hyperlinks and repeat the process recursively.
-Automating web scraping also allows to define whether the process should be run at regular intervals and capture changes
-in the data.
+웹스크래핑(Web Scraping)은 웹사이트에서 데이터를 추출하는 과정으로 정의된다. 
+웹상에서 이용가능한 일부 데이터는 수집하기도 쉽고 이용하기도 쉬운 형태으로 되어 있다. 
+예를 들어 다운로드 가능한 CSV(콤마 구분값) 데이터셋은 데이터 분석 스크립트를 작성해서 쉽게 불러오거나 
+스프레드쉬트 엑셀로 바로 가져올 수 있다.
+하지만, 공개되었어도 데이터를 바로 재사용 가능한 것은 아니다.
+예를 들어, PDF 파일, 웹사이트 표, 웹페이지에 산재된 데이터를 바로 재사용가능하지 않은 데이터 예로 들 수 있다.
 
 
-> ## Prerequisites
+재사용을 목적으로 정보를 추출하는데 웹사이트를 **스크랩**하는 방식은 다양하다.
+가장 간단한 형태로 웹페이지 일부를 복사해서 붙여넣는 방식도 있지만, 추출할 데이터가 어마어마한 경우, 혹은 
+다수 웹페이지 산재되어 있는 경우 비현실적이다. 
+대신에 전문화된 도구와 기술을 사용해서 웹페이지에서 데이터를 추출하는 과정을 자동화할 수 있다.
+자동화하는 과정에는 방문할 웹사이트를 정의하고, 추출할 정보를 지정하고, 
+데이터 추출 작업이 페이지 하단에 닫게 되면 멈출지, 하이퍼링크를 따라서 추출과정을 재귀적으로 반복하는 과정도 포함된다.
+웹스크레핑 자동화에는 데이터 추출 작업이 정기적으로 실행될지 데이터에 변경사항만 잡아낼지도 포함된다.
+
+> ## 선수 학습
 >
-> As webscraping is a technique to extract data from web pages, it requires some understanding of
-> the technologies that are used to display information on the web. 
-> This lesson therefore assumes that learners will have some familiarity with [HTML](https://en.wikipedia.org/wiki/HTML)
-> and the [Document Object Model](https://en.wikipedia.org/wiki/Document_Object_Model) (DOM).
+> 웹스크래핑이 웹페이지에서 데이터를 추출하는 기법이라, 웹상에 정보를 표시하는데 
+> 사용되는 기기반기술에 대한 이해가 일부 필요하다.
+> 따라서, 이번 학습은 학습자가 [HTML](https://en.wikipedia.org/wiki/HTML)과 
+> [Document Object Model](https://en.wikipedia.org/wiki/Document_Object_Model) (DOM)에 대한 친숙하다는 가정을 깔고 시작한다.
 >  
-> The first part of this lesson will use browser extensions to introduce the concepts of web scraping
-> as well as introduce the XPath syntax for selecting elements on a web page
-> and requires no further specific knowledge.
-> The second part will introduce the use of specialized libraries to scrape websites by writing
-> custom computer programs and will require some familiarity with the 
-> [Python programming language](https://swcarpentry.github.io/python-novice-inflammation/)
-> and [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming).
+> 이번 학습 첫부분은 브라우저 확장(Browser Extension)기능을 사용해서 
+> 웹스크래핑 기본개념과 함께 웹페이지 웹구성요소(element) 선택하는데 사용되는 Xpath 구문도 소개한다.
+> 두번째 부분은 전문 라이브러리를 사용해서 웹사이트를 긁어오는데 
+> [Python programming language](https://swcarpentry.github.io/python-novice-inflammation/),
+> [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) 개념의 친숙성을 바탕으로  
+> 사용자 정의 컴퓨터 프로그램을 작성한다.
 >
 {: .prereq}
 
-## Software requirements
+## 소프트웨어 요구사항
 
-Refer to the [Setup](setup/) section to install the required software to follow along this lesson.
+[Setup](setup/)절을 참조해서 이번 학습을 따라가는데 필요한 소프트웨어를 설치한다.
 
 > ## Under development
 >
