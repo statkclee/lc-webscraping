@@ -1,64 +1,73 @@
 ---
-title: "Selecting content on a web page with XPath"
+title: "Xpath를 사용해서 웹페이지 콘텐츠 선택하기"
 teaching: 30
 exercises: 15
 questions:
-- "How can I select a specific element on web page?"
-- "What is XPath and how can I use it?"
+- "웹페이지에서 특정 요소(element)를 선택하는 방법은 무엇인가요?"
+- "XPath는 무엇이고 어떻게 사용하나요?"
 objectives:
-- "Introduce XPath queries"
-- "Explain the structure of an XML or HTML document"
-- "Explain how to view the underlying HTML content of a web page in a browser"
-- "Explain how to run XPath queries in a browser"
-- "Introduce the XPath syntax"
-- "Use the XPath syntax to select elements on this web page"
+- "XPath 쿼리를 소개한다."
+- "XML 혹은 HTML 문서 구조를 설명한다."
+- "브라우저에서 잠재된 웹페이지 HTML 콘텐츠를 보는 방법을 설명한다."
+- "브라우저에서 XPath 쿼리를 실행하는 방법을 설명한다."
+- "XPath 구문을 소개한다."
+- "XPath 구문을 사용해서 웹페이지 요소를 선택한다."
 keypoints:
-- "XML and HTML are markup languages. They provide structure to documents."
-- "XML and HTML documents are made out of nodes, which form a hierarchy."
-- "The hierarchy of nodes inside a document is called the node tree."
-- "Relationships between nodes are: parent, child, sibling."
-- "XPath queries are constructed as paths going up or down the node tree."
-- "XPath queries can be run in the browser using the `$x()` function."
+- "XML과 HTML은 마크업 언어로 문서에 구조를 생성시킨다."
+- "XML과 HTML 문서는 노드(node)로 구성되고 노드는 위계(hierarchy)를 형성한다."
+- "문서내부 노드 위계를 노드 나무(node tree)라고 부른다."
+- "XPath 쿼리를 경로(path)로 생성시켜서 노드 나무 위아래로 오르내리게 된다."
+- "`$x()` 함수를 사용해서 브라우저에서 XPath 쿼리를 실행시키다."
 ---
-Before we delve into web scraping proper, we will first spend some time introducing
-some of the techniques that are required to indicate exactly what should be
-extracted from the web pages we aim to scrape.
 
-The material in this section was adapted from the [XPath and XQuery Tutorial](https://github.com/code4libtoronto/2016-07-28-librarycarpentrylessons/blob/master/xpath-xquery/lesson.md)
-written by [Kim Pham](https://github.com/kimpham54) ([@tolloid](https://twitter.com/tolloid))
-for the July 2016 [Library Carpentry workshop](https://code4libtoronto.github.io/2016-07-28-librarycarpentry/) in Toronto.
-
-# Introduction
-XPath (which stands for XML Path Language) is an _expression language_ used to specify parts of an XML document.
-XPath is rarely used on its own, rather it is used within software and languages that are aimed at manipulating
-XML documents, such as XSLT, XQuery or the web scraping tools that will be introduced later in this lesson.
-XPath can also be used in documents with a structure that is similar to XML, like HTML.
-
-## Markup Languages
-XML and HTML are _markup languages_. This means that they use a set of tags or rules to organise and provide
-information about the data they contain. This structure helps to automate processing, editing, formatting,
-displaying, printing, etc. that information.
-
-XML documents stores data in plain text format. This provides a software- and hardware-independent way of storing,
-transporting, and sharing data. XML format is an open format, meant to be software agnostic. You can
-open an XML document in any text editor and the data it contains will be shown as it is meant to be represented.
-This allows for exchange between incompatible systems and easier conversion of data.
+본격적으로 웹스래핑을 시작하기 전에, 먼저 스크래핑할 웹페이지에서 추출 대상을 명확히 하는데 
+필요한 기술을 소개하는데 일부 시간을 할애한다.
 
 
-> ## XML and HTML
+이번 학습 교재는 [Kim Pham](https://github.com/kimpham54) ([@tolloid](https://twitter.com/tolloid))님이 
+토론토 2016년 [Library Carpentry workshop](https://code4libtoronto.github.io/2016-07-28-librarycarpentry/)을 위해 작성된 
+[XPath and XQuery Tutorial](https://github.com/code4libtoronto/2016-07-28-librarycarpentrylessons/blob/master/xpath-xquery/lesson.md)에서 
+차용한 것임을 밝혀둔다.
+
+
+# 들어가며 
+
+**XPath(XML Path Lanuage 줄임말)**는 *표현언어(Expression Language)*로 XML 문서 일부를 지정하는데 사용된다.
+XPath 그 자체로 사용되는 경우는 매우 드물고 XML 문서를 조작용도로 사용되는 소프트웨어와 프로그래밍 언어 내부에 조합되어 사용된다.
+해당 XML 문서에는 XSLT, XQuery 혹은 학습 후반부에 소개되는 웹스크래핑 도구가 포함된다.
+XPath는 HTML처럼 XML과 유사한 구조를 갖는 문서에서도 활용될 수 있다.
+
+
+## 마크업 언어 
+
+XML과 HTML 모두 **마크업 언어(markup languages)**다.
+이것이 의미하는 바는 태그와 규칙 집합을 사용해서 데이터에 관한 정보를 구조화하고 제공한다는 것이다.
+이런 구조를 통해 해당 정보를 처리하고, 편집하고, 외양을 지정하고, 화면에 표시하고, 출력하는 등 다양한 작업을 
+자동화하는데 도움이 된다.
+
+
+XML 문서는 데이터를 일반 평문 텍스트 형태로 저장한다.
+이를 통해 데이터를 저장하고, 전송하고 공유하는데 소프트웨어와 하드웨어에 종속되지 않아도 되는 기능을 제공한다.
+XML 포맷은 공개된 오픈 포맷이라서 특정 소프트웨어에 구속되지 않음을 의미한다.
+누구나 XML 문서를 임의 텍스트 편집기로 열 수 있고 XML 문서에 담긴 데이터는 원래 형태 그래도 읽을 수 있음을 의미한다.
+이를 통해서 호화되지 않는 시스템간에 교환이 가능하고 데이터 변환 수월성을 획득하게 된다.
+
+
+> ## XML과  HTML
 >
-> Note that HTML and XML have a very similar structure, which is why XPath can be used almost interchangeably to
-> navigate both HTML and XML documents. In fact, starting with HTML5, HTML documents are fully-formed XML documents.
-> In a sense, HTML is like a particular dialect of XML.
->
+> HTML과 XML은 매우 유사한 구조를 갖고 있어, 이런 이유로 인해서 XPath를 사용해서 HTML 문서와 XML 문서간에 
+> 자유로이 넘나들 수 있게 된다.
+> 사실 HTML5가 시작되면서, HTML 문서는 완전한 XML 문서가 되었다.
+> 이런 의미에서 HTML은 XML의 방언처럼 굳어지게 되었다.
+> 
 {: .callout}
 
-XML document follows basic syntax rules:
+XML 문서는 다음과 같은 기본 구문 규칙을 따른다:
 
-* An XML document is structured using _nodes_, which include element nodes, attribute nodes and text nodes
-* XML element nodes must have an opening and closing tag, e.g. `<catfood>` opening tag and `</catfood>` closing tag
-* XML tags are case sensitive, e.g. `<catfood>` does not equal `<catFood>`
-* XML elements must be properly nested:
+* XML 문서는 **노드(node)**를 사용하여 구성되고, 노드에는 요소(element) 노드, 속성(attribute) 노드, 텍스트 노드가 포함된다.
+* XML 요소 노드는 시작 태그와 마무리 태그를 갖추어야 한다. 예를 들어, `<catfood>` 시작 태그와 `</catfood>` 마무리 태그.
+* XML 태그는 대소문자를 구별한다. 예를 들어, `<catfood>` 태그와 `</catfood>` 태그는 같지 않다.
+* XML 요소는 올바르게 중첩되어(nested)야 된다:
 
 ```
 <catfood>
@@ -67,82 +76,90 @@ XML document follows basic syntax rules:
   <date>2019-10-01</date>
 </catfood>
 ```
+
 * Text nodes (data) are contained inside the opening and closing tags
 * XML attribute nodes contain values that must be quoted, e.g.
+
+* 텍스트 노드(데이터)는 시작 태그와 마무리 태그 사이에 담겨져야만 된다.
+* XML 속성 노드는 인용부호로 감싼 값을 포함해야 된다. 
 ``` <catfood type="basic"></catfood> ```
 
-# XPath Expressions
+# XPath 표현식(Expressions)
 
-XPath is written using expressions, and when these expressions are evaluated on XML documents they return an object
-containing the node(s) that you aim to select. Contrary to a flat text document, XML data is structured, as it is
-organized in nodes and subnodes.
-Therefore, when using XPath, we are not querying raw text or data values like we would so using Regular Expressions,
-for example. Instead, XPath makes use of the fact that XML documents are structured and instead navigates through the
-node structure to select the data that we are looking for.
+XPath는 표현식을 활용해서 작성된다.
+XML 문서에 표현식 평가가 마무리 되면, 선택하고자 하는 노드가 포함된 객체를 반환시킨다. 
+평문 텍스트 문서와 달리, XML 데이터는 노드와 하위 노드로 엮어져 구조화되어 있다.
+따라서, XPath를 사용할 때, 정규 표현식을 사용할 때처럼 원문 텍스트 혹은 데이터값을 쿼리하는 것은 아니다.
+대신에 XPath는 XML 문서로 구조화된 사실을 활용해서 찾고자 하는 데이터를 선택하는데 노드 구조를 훑어 나가는 방식을 취한다.
 
 XPath is typically used to select and compare nodes, not edit them. To manipulate or edit nodes, another language such
 as XQuery would be used instead.
 
-> ## XPath assumes _structured_ data
+**XPath**는 노드를 선택하고 비교하는데 사용되는 것이 일반적이고 편집할 때는 사용되지 않는다.
+노드를 조작하거나 편집하는데 **XQuery** 같은 또 다른 언어를 일반적으로 대안으로 사용한다.
+
+> ## XPath 는 **구조화된(structured)** 데이터를 가정한다.
 >
-> We can think of using XPath as similar to search a library catalogue using the advanced search function.
-> In a catalogue, we can take advantage of the fact that bibliographic information has been properly structured
-> in the database by specifying which metadata fields we want to query. For example, if we are looking for books
-> about Shakespeare but not those written by him, we can use the advanced search function to look for that name
-> in the "title" field only.
+> `XPath` 사용을 비유하면 고급 검색 함수를 사용해서 도서관 카탈로그 검색하는 것으로 간주할 수도 있다.
+> 도서 카탈로그에 서지정보가 도서관 데이터베이스에 차곡차곡 구조화되어 있다는 사실을 이용할 때, 쿼리하고자 하는 
+> 메타데이터 특정 필드명을 명세하는 것으로 갈음하는 것과 같다.
+> 예를 들어, 저자가 Shakespeare가 아니고 Shakespeare에 대한 책을 검색할 때, "도서 제목" 필드만 해당 검색어 Shakespeare를 
+> 넣어 고급 검색작업을 수행하는 것과 같다.
 >
-> Contrary to Regular Expressions, this means that we don't have to know in advance what the data we are looking for
-> looks like, we just need to know in which node(s) (or fields) it resides.
+> 정규 표현식과 달리, 상기 사실이 의미하는 바는 검색하고자 하는 데이터가 어떨지 미리 알 필요가 없다는 것을 의미한다.
+> 단지, 해당 정보가 위치한 노드(필드)만 알면된다.
 >
 {: .callout}
 
-Now let's start using XPath.
+이제 XPath 사용을 시작하자.
 
-## Navigating through the HTML node tree using XPath
+## XPath를 사용해서 HTML 노드 나무를 탐색
 
-A popular way to represent the structure of an XML or HTML document is the _node tree_:
+XML 혹은 HTML 문서 구조를 표현하는 인기있는 방식은 **노드 나무(node tree)**를 채택하는 것이다:
 
 ![HTML Node Tree](http://www.w3schools.com/js/pic_htmltree.gif)
 
-In an HTML document, everything is a node:
+HTML 문서에서 모든 것이 노드다:
 
-* The entire document is a document node
-* Every HTML element is an element node
-* The text inside HTML elements are text nodes
+* 전체 문서가 문서 노드(document node)다.
+* 모든 HTML 요소도 요소 노드(element node)다.
+* HTML 요소 내부 텍스트도 텍스트 노드(text node)다.
 
-The nodes in such a tree have a hierarchical relationship to each other. We use the terms _parent_, _child_ and
-_sibling_ to describe these relationships:
+이런 나무에서 노드는 서로 서로 위계 관계를 갖는다.
+**부모(parent)**, **자식(child)**, **형제자매(sibling)** 용어를 사용해서 노드간의 관계를 기술한다:
 
-* In a node tree, the top node is called the *root* (or *root node*)
-* Every node has exactly one *parent*, except the root (which has no parent)
-* A node can have zero, one or several *children*
-* *Siblings* are nodes with the same parent
-* The sequence of connections from node to node is called a *path*
+* 노드로 구성된 나무에서, 최상위 노드를 **루트** 혹은 루트 노드라고 부른다. 
+* 모든 노드는 정확하게 한부모를 갖는다. 루트 노드는 예외로 부모가 없다.
+* 노드는 자식이 없거나 하나 혹은 다수를 갖을 수 있다.
+* **형제자매** 노드는 같은 부모를 갖는 노드를 일컫는다.
+* 노드에서 노드로 연결 순열을 **경로(path)**라고 일컫는다.
+
 
 ![Node relationships](http://www.w3schools.com/js/pic_navigate.gif)
 
-Paths in XPath are defined using slashes (`/`) to separate the steps in a node connection sequence, much like
-URLs or Unix directories.
+XPath에서 경로는 슬래쉬(`/`)를 사용해서 노드 연결 순열에 단계를 구분한다.
+URL 혹은 유닉스 디렉토리와 대단히 유사하다.
 
-In XPath, all expressions are evaluated based on a *context node*. The context node is the node in which a path
-starts from. The default context is the root node, indicated by a single slash (/), as in the example above.
+XPath에서 모든 표현식은 *문맥 노드(context node)*에 기반해서 평가된다.
+문맥 노드는 경로가 시작되는 노드가 된다.
+기본설정된 문맥 노드는 루트 노드로 슬래쉬(`/`)로 표기된다.
 
-The most useful path expressions are listed below:
+가장 유용한 경로 표현식(Path Expression)은 다음과 같다:
 
-| Expression   | Description |
-|-----------------|:-------------|
-| ```nodename```| Select all nodes with the name "nodename"   |
-| ```/```  | A beginning single slash indicates a select from the root node, subsequent slashes indicate selecting a child node from current node  |
-| ```//``` | Select direct and indirect child nodes in the document from the current node - this gives us the ability to "skip levels" |
-| ```.```       | Select the current context node   |
-|```..```  | Select the parent of the context node|
-|```@```  | Select attributes of the context node|
-|```[@attribute = 'value']```   |Select nodes with a particular attribute value|
-|`text()`| Select the text content of a node|
-| &#124;|Pipe chains expressions and brings back results from either expression, think of a set union |
+|    표현식      |      상세설명     |
+|---------------|:-----------------|
+| ```nodename```| "nodename" 노드 명칭을 갖는 모든 노드를 선택한다.   |
+| ```/```       | 시작하는 단일 슬래쉬는 루트 노드에서 선택임을 지칭하고, 후속 슬래쉬는 현재노드에서 자식노드 선택임을 지칭함.    |
+| ```//```      | 현재 노드에서 문서의 직간접 자식 노드를 선택하게 한다. 이를 통해서 "레벨 건너뛰기" 능력이 부여된다. |
+| ```.```       | 현재 문맥 노드를 선택한다.   |
+| ```..```      | 문맥노드의 부모를 선택한다. |
+| ```@```       | 문맥 노드의 속성을 선택한다.|
+| ```[@attribute = 'value']```   |특정 속성값을 갖는 노드를 선택한다.|
+| `text()`      | 노드의 텍스트 문맥을 선택한다.|
+| &#124;        | 파이프 사슬 표현식. 이거 아니면 저것 표현식으로 결과를 가져온다. 합집합 기호로 생각하면 편하다. |
 
 
-## Navigating through a webpage with XPath using a browser console
+## 브라우저 콘솔을 사용해서, XPath로 웹페이지 탐색하기  
 
 We will use the HTML code that describes this very page you are reading as an example. By default, a web browser
 interprets the HTML code to determine what markup to apply to the various elements of a document, and the code is
