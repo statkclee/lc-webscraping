@@ -38,12 +38,5 @@ root: .
 
 ## 소프트웨어 요구사항
 
-[Setup](setup/)절을 참조해서 이번 학습을 따라가는데 필요한 소프트웨어를 설치한다.
+[Setup](setup.html)절을 참조해서 이번 학습을 따라가는데 필요한 소프트웨어를 설치한다.
 
-> ## Under development
->
-> Please note that the contents of this lesson are still being actively developed. Any feedback is
-> appreciated, please do not hesitate to contact [the author](mailto:tom@timtom.ch) or contribute
-> to the lesson by [forking it on GitHub](https://github.com/timtomch/library-webscraping/).
->
-{: .callout}
