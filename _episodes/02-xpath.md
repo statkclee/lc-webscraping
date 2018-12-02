@@ -161,24 +161,24 @@ XPath에서 모든 표현식은 *문맥 노드(context node)*에 기반해서 �
 
 ## 브라우저 콘솔을 사용해서, XPath로 웹페이지 탐색하기  
 
-We will use the HTML code that describes this very page you are reading as an example. By default, a web browser
-interprets the HTML code to determine what markup to apply to the various elements of a document, and the code is
-invisible. To make the underlying code visible, all browsers have a function to display the raw HTML content of
-a web page.
+HTML 코들 사용해서 예제로 읽어들인 웹페이지를 기술해보자.
+기본디폴트 설정으로, 웹브라우저는 HTML 코드를 해석해서 다양한 문서 요소에 어떤 마크업을 적용할지 결정하는 반면에,
+코드는 보이지 않게 된다.
+내재된 코드를 볼 수 있도록, 모든 브라우저는 웹페이지 HTML 원 콘텐츠를 표시할 수 있는 함수가 제공된다.
 
-> ## Display the source of this page
-> Using your favourite browser, display the HTML source code of this page.
->
-> Tip: in most browsers, all you have to do is do a right-click anywhere on the page and select the "View Page Source"
-> option ("Show Page Source" in Safari).
->
-> Another tab should open with the raw HTML that makes this page. See if you can locate its various elements, and
-> this challenge box in particular.
->
+> ## 웹페이지 소스 화면에 표시하기 
+> 
+> 본인이 선호하는 웹브라우저를 사용해서, 해당 페이지 HTML 소스코드를 화면에 표시한다.
+> 
+> 팁: 브라우저 대부분, 해야되는 작업은 해당 웹페이지에서 우클릭하고 "View Page Source" 선택옵션을 선택한다.
+> (맥 사바리에서는 "Show Page Source")
+> 
+> 해당 웹페이지를 제작하는데 사용된 원문 HTML이 탭이 새로 생성되면서 열리게 된다.
+> 다양한 HTML 요소를 저정할 수 있는지, 특히 `웹페이지 소스 화면에 표시하기` 박스도 지정 가능한지 확인한다.
 {: .challenge}
 
 
-> ## Using the Safari browser
+> ## 맥 사파리 웹브라우저를 사용하는 경우
 >
 > If you are using Safari, you must first turn on the "Develop" menu in order to view the page source, and use the
 > functions that we will use later in this section. To do so, navigate to Safari > Preferences and in the Advanced tab
@@ -186,8 +186,7 @@ a web page.
 >
 {: .callout}
 
-The HTML structure of the page you are currently reading looks something like this (most text and elements have
-been removed for clarity):
+현재 읽고 있는 웹페이지 HTML 구조는 다음과 같다(명확하게 할 수 있도록, 텍스트와 요소 대부분을 제거함):
 
 ~~~
 <!doctype html>
@@ -203,66 +202,73 @@ been removed for clarity):
 ~~~
 {: .output}
 
-We can see from the source code that the title of this page is in a `title` element that is itself inside the
-`head` element, which is itself inside an `html` element that contains the entire content of the page.
+소스코드에서 해당 웹페이지 제목은 `head` 요소 내부 `title` 요소로 배치된 것을 확인할 수 있다.
+`head` 자체는 `html` 요소 내부에 위치하고 `html`은 다시 전체 웹페이지 콘텐츠를 담고 있다.
 
-Say we wanted to tell a web scraper to look for the title of this page, we would use this information to indicate the
-_path_ the scraper would need to follow at it navigates through the HTML content of the page to reach the `title`
-element. XPath allows us to do that.
+웹스크핑하는 프로그램이 해당 웹페이지 제목(title)을 찾도록 지시한다고 가정하자.
+이러한 정보를 사용해서, 웹스크핑하는 프로그램이 해당 웹페이지 HTML 콘텐츠를 탐색하여 `title` 요소에 도달하도록
+**경로(path)**를 지정하도록 알고리즘을 설계하고 코딩한다.
+XPath를 통해 이 작업이 가정하다.
 
-We can run XPath queries directly from within all major modern browsers, by enabling the built-in JavaScript console.
 
-> ## Display the console in your browser
+시장을 지배하는 현세대 웹브라우저에서 XPath 쿼리문을 실행시킬 수 있다. 
+실행시키는 방법은 내장 자바스크립트 콘솔을 활성화시키면 된다.
+
+> ## 웹브라우져에서 콘솔을 표시하는 방법
 >
-> * In Firefox, use to the *Tools > Web Developer > Web Console* menu item.
-> * In Chrome, use the *View > Developer > JavaScript Console* menu item.
-> * In Safari, use the *Develop > Show Error Console* menu item. If your Safari browser doesn't have a Develop menu,
->   you must first enable this option in the Preferences, see above.
+> * 파이어 폭스, *Tools > Web Developer > Web Console* 메뉴 아이템에서 사용.
+> * 크롬에서, *View > Developer > JavaScript Console* 메뉴 아이템에서 사용.
+> * 사파리에서, *Develop > Show Error Console* 메뉴 아이템에서 사용. 사파리 웹브라우저에서 `Develop` 메뉴가 없는 경우,
+>   `Preferences`에서 해당 선택옵션을 먼저 활성화시키고 나서 다시 상기 방법을 따라 실행해 본다.
 >
 {: .callout}
 
-Here is how the console looks like in the Firefox browser:
+파이어폭스 웹브라우저에서 콘솔을 실행시킨 경우 다음과 같은 화면이 나타난다:
 
 ![JavaScript console in Firefox]({{ page.root }}/fig/firefox-console.png)
 
-For now, don't worry too much about error messages if you see any in the console when you open it. The console
-should display a _prompt_ with a `> ` character (`>>` in Firefox) inviting you to type commands.
+현재시점에서, 콘솔이 열릴 때 있을지 모를 오류 메시지에 대해서 그다지 걱정할 필요는 없다.
+콘솔에 _프롬프트_ `> ` 문자(파이어 폭스는 `>>`)로 깜빡이는데 명령을 기다리고 있음을 나타낸다. 
 
-The syntax to run an XPath query within the JavaScript console is `$x("XPATH_QUERY")`, for example:
+자바스크립트 콘솔에서 XPath 쿼리를 실행하는 구문은 `$x("XPATH_QUERY")`와 같다. 예를 들어;
 
 ~~~
 $x("/html/head/title/text()")
 ~~~
 {: .source}
 
-This should return something similar to
+다음과 유사한 결과가 출력된다.
 
 ~~~
 <- Array [ #text "{{page.title}}" ]
 ~~~
 {: .output}
 
-The output can vary slightly based on the browser you are using. For example in Chrome, you have to "open" the
-return object by clicking on it in order to view its contents.
+출력결과는 사용된 브라우저에 따라 다소 차이가 날 수 있다.
+예를 들어, 크롬에서 콘텐츠를 보려면 실행된 명령어로 반환된 객체를 "open"해서 열어야 된다.
 
-Let's look closer at the XPath query used in the example above: `/html/head/title/text()`. The first `/` indicates
-the _root_ of the document. With that query, we told the browser to
+상기 예제에서 사용된 XPath 쿼리를 좀더 자세히 살펴보자: `/html/head/title/text()`.
+첫번째 `/`은 문서 **루트(root)**를 나타낸다. 쿼리가 의미하는 바는, 브라워저로 하여금 다음 작업을 수행하도록 한 것이다.
+
 
 |-----------------|:-------------|
-| `/`| Start at the root of the document... |
-| `html/`| ... navigate to the `html` node ... |
-| `head/`| ... then to the `head` node  that's inside it... |
-| `title/`| ... then to the `title` node that's inside it... |
-| `text()`| and select the text node contained in that element |
+| `/`| 문서 루트에서 시작하라... |
+| `html/`| ... `html` 노드로 이동하라 ... |
+| `head/`| ... 그리고 `head` 노드로 가서 내부로 들어가라... |
+| `title/`| ... 그리고 `title` 노드로 가서 내부로 들어가라... |
+| `text()`| 그리고 텍스트 노드를 선택하라.|
 
-Using this syntax, XPath thus allows us to determine the exact _path_ to a node.
+상기 구문을 사용해서 XPath는 노드에 대한 정확한 **경로**를 결정하도록 하는 역할을 수행한다.
 
-> ## Select the "Introduction" title
-> Write an XPath query that selects the "Introduction" title above and try running it in the console.
+
+> ## "들어가며" 제목 선택하기
+> 
+> XPath 쿼리를 작성해서 "들어가며" 제목을 선택하도록 하고 콘솔에서 직접 실행해본다.
 >
 > Tip: if a query returns multiple elements, the syntax `element[1]` can be used. Note that
 > XPath uses one-based indexing, therefore the first element has index 1, the second has index 2 etc.
->
+> 
+> 팁: 
 > > ## Solution
 > >
 > > ~~~
