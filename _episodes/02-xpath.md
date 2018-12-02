@@ -265,18 +265,17 @@ $x("/html/head/title/text()")
 > 
 > XPath 쿼리를 작성해서 "들어가며" 제목을 선택하도록 하고 콘솔에서 직접 실행해본다.
 >
-> Tip: if a query returns multiple elements, the syntax `element[1]` can be used. Note that
-> XPath uses one-based indexing, therefore the first element has index 1, the second has index 2 etc.
-> 
-> 팁: 
-> > ## Solution
+> 팁: 쿼리 실행결과 다수 요소가 반환되는 경우, `element[1]` 구문을 사용하면 유용하다.
+> XPath는 1부터 시작하는 인덱스 체계를 갖고 있어서, 첫번째 요소는 인덱스 1, 두번째 요소는 인덱스 2 등... 
+> >
+> > ## 해답
 > >
 > > ~~~
 > > $x("/html/body/div/article/h1[1]")
 > > ~~~
 > > {: .source}
 > >
-> > should produce something similar to
+> > 위와 같이 코드를 작성해서 실행하면 다음과 같은 결과를 얻게 된다.
 > >
 > > ~~~
 > > <- Array [ <h1#introduction> ]
@@ -286,63 +285,64 @@ $x("/html/head/title/text()")
 > {: .solution}
 {: .challenge}
 
-Before we look into other
-ways to reach a specific HTML node using XPath, let's start by looking closer at how nodes are arranged
-within a document and what their relationships with each others are.
+XPath를 사용해서 특정 HTML 노드에 도달하는 다른 방법을 살펴보기 전에,
+문서 내부에서 노드가 어떻게 배열되고 서로간에 관계는 어떻게 정의되는지 좀더 자세히 살펴보자.
 
+예를 들어, 강의 웹페이지에서 모든 `blockquote`를 선택하는 경우 다음과 같이 코드를 작성한다.
 
-For example, to select all the `blockquote` nodes of this page, we can write
 
 ~~~
 $x("/html/body/div/article/blockquote")
 ~~~
 {: .source}
 
-This produces an array of objects:
+상기 코드를 실행하면 객체 배열이 만들어진다:
 
 ~~~
 <- Array [ <blockquote.objectives>, <blockquote.callout>, <blockquote.callout>, <blockquote.challenge>, <blockquote.callout>, <blockquote.callout>, <blockquote.challenge>, <blockquote.challenge>, <blockquote.challenge>, <blockquote.keypoints> ]
 ~~~
 {: .output}
 
-This selects all the `blockquote` elements that are under `html/body/div`. If we want instead to select _all_
-`blockquote` elements in this document, we can use the `//` syntax instead:
+`html/body/div` 아래 위치한 모든 `blockquote` 요소가 선택된다.
+대신에 웹페이지 문서에서 `blockquote` 요소를 선택하는자 하는 경우 `//` 구문을 사용할 수 있다:
+
 
 ~~~
 $x("//blockquote")
 ~~~
 {: .source}
 
-This produces a longer array of objects:
+상기 코드를 실행하게 되면 더 긴 객체 배열이 만들어 진다:
 
 ~~~
 <- Array [ <blockquote.objectives>, <blockquote.callout>, <blockquote.callout>, <blockquote.challenge>, <blockquote.callout>, <blockquote.callout>, <blockquote.challenge>, <blockquote.solution>, <blockquote.challenge>, <blockquote.solution>, 3 more… ]
 ~~~
 {: .output}
 
-> ## Why is the second array longer?
-> If you look closely into the array that is returned by the `$x("//blockquote")` query above,
-> you should see that it contains objects like `<blockquote.solution>` that were not
-> included in the results of the first query. Why is this so?
->
-> Tip: Look at the source code and see how the challenges and solutions elements are
-> organised.
+> ## 왜 두번째 배열은 더 길이가 길까?
+> 
+> 상기 `$x("//blockquote")` 쿼리가 반환하는 배열을 좀더 자세히 살펴보면, 
+> 첫번째 쿼리 결과에 포함되지 않은 `<blockquote.solution>` 같은 객체가 포함된 것을 알 수 있다.
+> 왜 이럴까?
+> 
+> 팁: 소스 코드를 보고 도전과제(challenge)와 해답(solution) 요소가 조직된 방식을 살펴본자.
 >
 {: .challenge}
 
-We can use the `class` attribute of certain elements to filter down results. For example, looking
-at the list of `blockquote` elements returned by the previous query, and by looking at this page's
-source, we can see that the blockquote elements on this page are of different classes
-(challenge, solution, callout, etc.).
 
-To refine the above query to get all the `blockquote` elements of the `challenge` class, we can type
+출력결과를 필터링하는데 특정 요소의 `class` 속성을 사용할 수 있다.
+예를 들어, 이전 쿼리에서 반환된 `blockquote` 요소 리스트와 웹페이지 소스코드를 살펴보면,
+`blockquote` 요소의 클래스(challenge, solution, callout, 등)가 다른 것을 알 수 있다.
+
+`challenge` 클래스의 `blockquote` 모든 요소만 얻도록 상기 쿼리를 마사지하면 다음과 같이 코드를 바꿀 수 있다:
+
 
 ~~~
 $x("//blockquote[@class='challenge']")
 ~~~
 {: .source}
 
-which returns
+상기 코드는 다음과 같은 결과를 반환한다.
 
 ~~~
 Array [ <blockquote.challenge>, <blockquote.challenge>, <blockquote.challenge>, <blockquote.challenge> ]
@@ -350,30 +350,29 @@ Array [ <blockquote.challenge>, <blockquote.challenge>, <blockquote.challenge>, 
 {: .output}
 
 
-> ## Select the "Introduction" title by ID
-> In a previous challenge, we were able to select the "Introduction" title because we knew it was
-> the first `h1` element on the page. But what if we didn't know how many such elements were on the
-> page. In other words, is there a different attribute that allows us to uniquely identify that title
-> element?
+> ## ID로 "들어가며" 제목 선택하기 
+> 
+> 이전 도전과제에서, "들어가며" 제목을 선택할 수 있는 이유는 웹페이지에서 첫번째 `h1` 요소라는 사실을 알고 있었기 때문이다.
+> 하지만, 웹페이지에 그런 요소가 얼마나 많은지 모르는 경우는 어떨까?
+> 말을 바꾸어서, 유일무이하게 제목 요소를 식별하는 다른 속성은 존재하는가?
 >
-> Using the path expressions introduced above, rewrite your XPath query to select
-> the "Introduction" title without using the `[1]` index notation.
+> 앞에서 소개된 경로 표현식(path expression)을 사용해서 XPath 쿼리를 다시 작성해서,
+> `[1]` 인텍스 표기법을 사용하지 않고 "들어가며" 제목을 선택하도록 해보자.
+> 
+> 팁:
 >
-> Tips:
+> * 웹페이지 소스코드를 살펴보거나 웹브라우저 "Inspect element" 함수를 사용해서 해당 요소를 유일무이하게 
+>   식별하는데 다른 정보를 활용할 수 있는지 살펴본다.
+> * `<div id="mytarget">`와 같이 요소를 선택하는 구문은 `div[@id = 'mytarget']`와 같이 작성한다.
 >
-> * Look at the source of the page or use the "Inspect element" function of your browser to see what
->   other information would enable us to uniquely identify that element.
-> * The syntax for selecting an element like `<div id="mytarget">` is `div[@id = 'mytarget']`.
->
->
-> > ## Solution
+> > ## 해답
 > >
 > > ~~~
 > > $x("/html/body/div/h1[@id='introduction']")
 > > ~~~
 > > {: .source}
 > >
-> > should produce something similar to
+> > 상기 코드 실행결과는 다음 결과를 출력한다.
 > >
 > > ~~~
 > > <- Array [ <h1#introduction> ]
@@ -384,33 +383,32 @@ Array [ <blockquote.challenge>, <blockquote.challenge>, <blockquote.challenge>, 
 {: .challenge}
 
 
-
-
-> ## Select this challenge box
-> Using an XPath query in the JavaScript console of your browser, select the element that contains the text
-> you are currently reading on this page.
+> ## `도전과제` 박스 선택하기
+> 
+> 웹브라우저 자바스크립트 콘솔에서 XPath 쿼리를 사용해서 현재 읽고 있는 웹페이지에서 텍스트를 담고 있는 요소만 선택하라.
+> 
 >
-> Tips:
+> 팁:
 >
-> * In principle, `id` attributes in HTML are unique on a page. This means that if you know the `id`
->   of the element you are looking for, you should be able to construct an XPath that looks for this value
->   without having to worry about where in the node tree the target element is located.
-> * The syntax for selecting an element like `<div id="mytarget">` is `div[@id = 'mytarget']`.
-> * Remember that XPath queries are relative to a context node, and by default that node is the root node.
-> * Use the `//` syntax to select for elements regardless of where they are in the tree.
-> * The syntax to select the parent element relative to a context node is `..`
-> * The `$x(...)` JavaScript syntax will always return an array of nodes, regardless of the number of
->   nodes returned by the query. Contrary to XPath, JavaScript uses _zero based indexing_, so the syntax to get
->   the first element of that array is therefore `$x(...)[0]`.
->
-> Make sure you select this entire challenge box. If the result of your query displays only the title of
-> this box, have a second look at the HTML structure of the document and try to figure out how to "expand"
-> your selection to the entire challenge box.
->
-> > ## Solution
-> > Let's have a look at the HTML code of this page, around this challenge box (using the "View Source" option)
-> > in our browser). The code looks something like this:
+> * 원론적으로 보면, HTML에서 `id` 속성은 해당 페이지에서 겹치지 않는 유일무이한 값이다. 
+>   찾고자 하는 `id` 요소를 알고 있는 경우, 노드 나무에서 위치한 곳을 전혀 걱정할 필요 없이
+>   XPath를 구성해서 해당 값을 찾을 수 있음을 의미한다.
+> * `<div id="mytarget">`와 같은 요소를 선택하는 XPath 구문은 `div[@id = 'mytarget']`이 된다.
+> * XPath 쿼리는 문맥 노드에 상대적으로 정해지고 기본 디폴트 설정으로 해당 문맥 노드는 루트 노드가 된다.
+> * `//` 구문을 사용해서 찾고자 하는 요소가 나무 어디에 있는지 관계없이 해당 요소를 특정할 수 있다.
+> * 문맥 노드에서 상대적으로 부모 요소를 선택하는 구문은 `..`이다.
+> * 자바스크립트 `$x(...)` 구문은 쿼리가 반환하는 노드 갯수에 상관없이, 항상 노드 배열을 반환한다. 
+>   XPath와 달리, 자바스크립트는 0부터 시작하는 인덱스 체계를 갖고 있다. 따라서, 배열의 첫번째 요소를 얻는 구문은
+>   `$x(...)[0]`와 같이 작성하면 된다.
+> 
+> 
+> 전체 도전과제(challenge) 상자를 선택하도록 한다. 작성한 쿼리가 도전과제 제목만 출력하는 경우, 
+> 문서 HTML 구조를 다시 살펴보고 전체 도전과제 상자가 선택되도록 "확장"하는 방법을 찾아본다.
+> 
+> > ## 해답
 > >
+> > 웹브라우저에서 ("View Source" 선택옵션을 사용) 도전과제 상자 주변의 HTML 코드를 살펴보자.
+> > 다음과 같이 HTML 코드가 보일 것이다:
 > > ~~~
 > > <!doctype html>
 > > <html lang="en">
@@ -432,34 +430,35 @@ Array [ <blockquote.challenge>, <blockquote.challenge>, <blockquote.challenge>, 
 > > ~~~
 > > {: .output}
 > >
-> > We know that the `id` attribute should be unique, so we can use this to select the `h2` element inside
-> > the challenge box:
+> >
+> > `id` 속성은 겹치지 않고 유일무이해야 되기 때문에, 이런 점을 적극 활용해서 도전과제 상자 내부에 `h2` 요소를 선택한다:
 > >
 > > ~~~
 > > $x("//h2[@id = 'select-this-challenge-box']/..")[0]
 > > ~~~
 > > {: .source}
 > >
-> > This should return something like
-> >
+> > 상기 코드를 실행하면 다음과 같은 결과가 출력된다.
+> > 
 > > ~~~
 > > <- <blockquote class="challenge">
 > > ~~~
 > > {: .output}
 > >
-> > Let's walk through that syntax:
+> > 이제 작성한 구문 각각을 하나씩 따져보자:
+> >
 > >
 > > |-----------------|:-------------|
-> > | `$x("`| This function tells the browser we want it to execute an XPath query. |
-> > | `//`| Look anywhere in the document... |
-> > | `h2`| ... for an h2 element ... |
-> > | `[@id = 'select-this-challenge-box']`| ... that has an `id` attribute set to `select-this-challenge-box`... |
-> > | `..`| and select the parent node of that h2 element |
-> > | `")"`| This is the end of the XPath query. |
-> > | `[0]`| Select the first element of the resulting array (since `$x()` returns an array of nodes and we are only interested in the first one).|
-> >
-> > By hovering on the object returned by your XPath query in the console, your browser should helpfully highlight
-> > that object in the document, enabling you to make sure you got the right one:
+> > | `$x("`| 브라우저에 XPath 쿼리를 실행시킨다는 사실을 전달한다. |
+> > | `//`| 문서 전체를 검색한다... |
+> > | `h2`| ... h2 요소만 찾는다... |
+> > | `[@id = 'select-this-challenge-box']`| ... `id` 속성을 `select-this-challenge-box`으로 고정시킨다... |
+> > | `..`| h2 요소의 부모 노드를 선택한다 |
+> > | `")"`| XPath 쿼리문 종료를 알림. |
+> > | `[0]`| 쿼리 실행결과 배열의 첫번째 요소를 선택 (`$x()`가 반환하는 노드 배열의 첫번째 요소만 관심이 있기 때문)|
+> > 
+> > 콘솔에서 XPath 쿼리가 반환한 객체 주변을 맴돌아보면, 웹브라우저가 웹페이지 해당 객체를 하일라이트 하는 것을 알 수 있는데,
+> > 이를 통해서 제대로 도전과제 박스가 선택된 것을 확인할 수 있다:
 > >
 > > ![Hovering over a resulting node in Firefox]({{ page.root }}/fig/firefox-hover.png)
 > {: .solution}
